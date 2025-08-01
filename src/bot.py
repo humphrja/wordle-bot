@@ -159,3 +159,5 @@ class WordleSolver:
         # If scores are equal, preference words that are actual possible solutions
 
         print(self.wordle_list.all_guesses)
+
+        return self.wordle_list.all_guesses.iloc[0, 0]  # Return the guess with the highest score

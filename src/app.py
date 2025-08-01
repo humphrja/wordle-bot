@@ -84,10 +84,11 @@ class WordleApp:
         self.answer_chars = ""
         self.char_freq = {}  # Dictionary, where the key is the character, and the value is the number of times it has been checked
 
-    def set_answer(self, answer: str):
-        # Check answer is within the list of possible solutions
-        if answer.upper() not in self.wl.possible_solutions[0].values:
-            raise ValueError(f"Answer '{answer}' is not a valid solution.")
+    def set_answer(self, answer: str, validate: bool = True):
+        if validate:
+            # Check answer is within the list of possible solutions
+            if answer.upper() not in self.wl.possible_solutions[0].values:
+                raise ValueError(f"Answer '{answer}' is not a valid solution.")
 
         self.answer_chars = answer.upper()
         self.char_freq = Counter(self.answer_chars)
