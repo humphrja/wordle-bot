@@ -1,3 +1,6 @@
+# Real-time modified file for guess data
+data/*.csv
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
