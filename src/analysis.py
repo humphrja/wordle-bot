@@ -16,10 +16,6 @@ import argparse
 # - 'player-b-guesses': The guesses made by player B
 # ...
 
-
-
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Wordle Bot Analysis Script")
     parser.add_argument('--file', '-f', type=str, help="Data file containing player scores", required=True)
@@ -52,13 +48,21 @@ if __name__ == "__main__":
     for player, line in zip(rolling_avg.columns, lines):
         ax.axhline(y=means[player], color=line.get_color(), linestyle='--', label=f'{player} Mean')
 
-    legend2 = ax.legend([plt.Line2D(xdata=[], ydata=[], color='black', linestyle='--')], ["mean"], loc='upper right')
+
+    # Add crosses for failures for each player
+    for player in rolling_avg.columns:
+        failures_player = failures[player]
+        if not failures_player.empty:
+            fail_dates = failures_player.index[failures_player > 6]
+            if not fail_dates.empty:
+                fail_line = ax.scatter(fail_dates, [rolling_avg[player].loc[idx] for idx in fail_dates], 
+                           color='red', marker='x', label=f'{player} Failure', s=100)
+
+    legend2 = ax.legend([plt.Line2D(xdata=[], ydata=[], color='black', linestyle='--'), fail_line], ["mean", "failures"], loc='upper right')
     ax.add_artist(legend2)  # Add the second legend to the plot
 
-    # # Add vertical lines for failures
-    # for date in failures.index:
-    #     plt.axvline(x=date, color='red', linestyle=':', label='Failure')
-
+    ax.set_xticks(rolling_avg.index[6::7])  # Set x-ticks to every 7th date
+    ax.set_xticklabels(rolling_avg.index[6::7], rotation=45, ha='right')  # Rotate x-tick labels for better readability
 
     ax.set_title('Average Number of Guesses per Player')
     ax.set_xlabel('Date')
