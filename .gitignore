@@ -1,5 +1,6 @@
 # Real-time modified file for guess data
 data/*.csv
+data/*.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
