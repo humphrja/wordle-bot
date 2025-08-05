@@ -44,16 +44,18 @@ if __name__ == "__main__":
     print(f"First guess: {first_guess} ({time() - start_time:.2f} s)")
 
     for i, soln in enumerate(game_history['solution']):
+        # Create a new bot for this game
+        bot = WordleSolver()
+
         # Set the answer for the app
         try:
             app.set_answer(soln)
         except ValueError as e:
+            # raise ValueError(e)
             print(f"Unexpected solution '{soln}': {e}")
             # Do not validate against expected word list
             app.set_answer(soln, validate=False)
-        
-        # Create a new bot for this game
-        bot = WordleSolver()
+            bot.wordle_list.possible_solutions = bot.wordle_list.all_guesses.copy()
         
         # Start the game loop
         guesses = []
