@@ -38,7 +38,7 @@ if __name__ == "__main__":
     rolling_avg = scores.rolling(window=7).mean()
     print(rolling_avg)
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(10, 7))
     
     lines = ax.plot(rolling_avg)
     legend1 = ax.legend(lines, rolling_avg.columns, loc='upper left')
@@ -48,7 +48,6 @@ if __name__ == "__main__":
     for player, line in zip(rolling_avg.columns, lines):
         ax.axhline(y=means[player], color=line.get_color(), linestyle='--', label=f'{player} Mean')
 
-
     # Add crosses for failures for each player
     for player in rolling_avg.columns:
         failures_player = failures[player]
@@ -57,6 +56,14 @@ if __name__ == "__main__":
             if not fail_dates.empty:
                 fail_line = ax.scatter(fail_dates, [rolling_avg[player].loc[idx] for idx in fail_dates], 
                            color='red', marker='x', label=f'{player} Failure', s=100)
+                
+    # Add vertical lines for each failure
+    for idx, soln in failures['solution'].items():
+        # Add a vertical line for the solution date
+        ax.axvline(x=idx, color='r', linestyle='-.', linewidth=0.5)
+
+        # Add vertical text at each solution date
+        ax.text(idx, 1.1, soln, rotation=90, verticalalignment='bottom', color='red', fontsize=8, ha='right')
 
     legend2 = ax.legend([plt.Line2D(xdata=[], ydata=[], color='black', linestyle='--'), fail_line], ["mean", "failures"], loc='upper right')
     ax.add_artist(legend2)  # Add the second legend to the plot
@@ -67,5 +74,6 @@ if __name__ == "__main__":
     ax.set_title('Average Number of Guesses per Player')
     ax.set_xlabel('Date')
     ax.set_ylabel('Weekly Rolling Average')
+    ax.set_ylim(1, 7)
     # plt.show()
     fig.savefig(f"data/{args.file}_analysis.png")

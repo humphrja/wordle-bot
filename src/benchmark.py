@@ -27,9 +27,10 @@ if __name__ == "__main__":
 
     # Load live-responses data
     game_history = pd.read_csv("data/benchmark_results.csv")
-    game_history = game_history.iloc[:3] # Truncate if needed
+    game_history = game_history.iloc[:] # Truncate if needed
 
     max_guesses = 6
+    fail_score = 7
 
     app = WordleApp()
 
@@ -83,7 +84,7 @@ if __name__ == "__main__":
             score = len(guesses)
             print(f"[{i+1}/{len(game_history)}] Bot solved '{soln}' in {score} guesses.")
         else:
-            score = max_guesses*2   # Strongly penalise failed solves
+            score = fail_score   # Strongly penalise failed solves
             print(f"[{i+1}/{len(game_history)}] Bot failed to solve '{soln}' within {max_guesses} guesses.")
 
         bot_scores.append(score)
