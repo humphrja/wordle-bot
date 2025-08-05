@@ -36,9 +36,11 @@ class WordleList:
             # Create dataframe out of list of comma-separated strings, removing the quotation marks
             self.all_guesses = pd.DataFrame([guess.strip('"').upper() for guess in file.read().split(',')])
 
-        with open("data/solutions.txt", "r") as file:
-            # Create dataframe out of list of comma-separated strings, removing the quotation marks
-            self.possible_solutions = pd.DataFrame([guess.strip('"').upper() for guess in file.read().split(',')])
+        # with open("data/solutions.txt", "r") as file:
+        #     # Create dataframe out of list of comma-separated strings, removing the quotation marks
+        #     self.possible_solutions = pd.DataFrame([guess.strip('"').upper() for guess in file.read().split(',')])
+
+        self.possible_solutions = self.all_guesses.copy()
 
         # Add a column to all_guesses that contains each guess' char freq
         # self.all_guesses['freq_dist'] = self.all_guesses[0].apply(create_freq_dict)
