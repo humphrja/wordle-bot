@@ -41,7 +41,8 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(figsize=(10, 7))
     
     lines = ax.plot(rolling_avg)
-    legend1 = ax.legend(lines, rolling_avg.columns, loc='upper left')
+    line_names = [f"{player}: {mean_score:.4f}" for player, mean_score in means.items()]
+    legend1 = ax.legend(lines, line_names, loc='upper left')
     ax.add_artist(legend1)  # Add the first legend to the plot
 
     # Add horizontal lines representing means, with same color as the player line
@@ -57,8 +58,12 @@ if __name__ == "__main__":
                 fail_line = ax.scatter(fail_dates, [rolling_avg[player].loc[idx] for idx in fail_dates], 
                            color='red', marker='x', label=f'{player} Failure', s=100)
                 
-    # Add vertical lines for each failure
-    for idx, soln in failures['solution'].items():
+    # Add vertical lines for only failures of latest bot version
+    latest_bot = player_scores.columns[-1]
+    latest_bot_failures = player_scores[scores[latest_bot].gt(6)]['solution']
+        # Note this could technically be a human player that doesn't really matter
+
+    for idx, soln in latest_bot_failures.items():
         # Add a vertical line for the solution date
         ax.axvline(x=idx, color='r', linestyle='-.', linewidth=0.5)
 
