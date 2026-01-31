@@ -63,9 +63,7 @@ if __name__ == '__main__':
     soln_sets = []
     while len(guesses) < 6:
         # Solver makes guess
-
         if len(guesses) >= 1:
-            # Guesses saree...
             bot.make_guess()
 
         guess = input("Guess: ")

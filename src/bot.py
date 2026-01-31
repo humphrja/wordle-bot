@@ -5,7 +5,7 @@ class WordleSolver:
         self.wordle_list = WordleList()
 
         # Dictionary where key is a character, and values are a list of valid positions. Calculated from the remaining solutions        
-        self.char_info = {}
+        # self.char_info = {}
 
     # Apply feedback to current guess list
     def apply_feedback(self, guess: str, feedback: str):
@@ -68,7 +68,7 @@ class WordleSolver:
     # # Maybe this could work if it also considers which characters have already been guessed (past guesses + those attempted within the current guess being checked)
     
     # Returns a score for a given guess, by comparing it to each solution
-    def score_guess(self, guess: str, possible_solutions: list[str]) -> float:
+    def score_guess(self, guess: str, possible_solutions: list[str], char_info: dict[str, list[int]], position_info: list[list[str]]) -> float:
         # Loop through each solution
             # Compare characters
         score = 0
@@ -88,13 +88,17 @@ class WordleSolver:
 
             for i, char in enumerate(guess):
                 # Do not score characters that are definitely not in the word
-                if char not in self.char_info:
+                if char not in char_info:
                     continue
-                if i not in self.char_info[char]:
+                if i not in char_info[char]:
                     continue
 
-
-
+                # Do not score characters that are 100% in a specific position across all remaining possible solutions.
+                # This occurs when a position in position_info only has one character
+                if len(position_info[i]) == 1 and position_info[i][0] == char:
+                    score += 0.1
+                    # Maybe make this a score multiplier, because it could be applied to greens and yellows
+                    continue
 
                 if char in soln:
                     if char == soln[i]:
@@ -141,17 +145,30 @@ class WordleSolver:
             # This should be implied from the remaining solutions list
 
 
-        self.char_info = {}
+        # This contains the only remaining valid positions for each character in the alphabet
+        char_info = {}
         # Use remaining solutions to populate char_info
         for soln in self.wordle_list.possible_solutions[0]:
             for i, char in enumerate(soln):
-                if char not in self.char_info:
-                    self.char_info[char] = []
-                if i not in self.char_info[char]:
-                    self.char_info[char].append(i)
+                if char not in char_info:
+                    char_info[char] = []
+                if i not in char_info[char]:
+                    char_info[char].append(i)
+
+        # This contains the only remaining character for each position in the word
+        position_info = [[] for _ in range(5)]
+        for soln in self.wordle_list.possible_solutions[0]:
+            for i, char in enumerate(soln):
+                if char not in position_info[i]:
+                    position_info[i].append(char)
+        # Could make this a frequency distribution?
+
+        print(f"Remaining solutions:\n{self.wordle_list.possible_solutions}")
+        print(f"char_info: {char_info}")
+        print(f"position_info: {position_info}")
 
         # Instead, use the positions of characters in the remaining solutions to determine the best guess
-        self.wordle_list.all_guesses['score'] = self.wordle_list.all_guesses[0].apply(lambda guess: self.score_guess(guess, self.wordle_list.possible_solutions[0]))
+        self.wordle_list.all_guesses['score'] = self.wordle_list.all_guesses[0].apply(lambda guess: self.score_guess(guess, self.wordle_list.possible_solutions[0], char_info, position_info))
         self.wordle_list.all_guesses.sort_values(by='score', ascending=False, inplace=True)
 
         # TODO:
@@ -161,3 +178,11 @@ class WordleSolver:
         print(self.wordle_list.all_guesses)
 
         return self.wordle_list.all_guesses.iloc[0, 0]  # Return the guess with the highest score
+
+
+
+
+    # Logic:
+    # Until there is only valid solution left
+        # Or maybe tweak this to guess a 50-50
+    
